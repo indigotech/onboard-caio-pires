@@ -1,18 +1,14 @@
 import React from 'react';
-import {
-  Text,
-} from 'react-native';
+import { StyleSheet, Text, View, AppRegistry } from "react-native";
+import { NativeRouter, Route, Link } from "react-router-native";
+import Login from './pages/Login/login'
 
-
-declare const global: {HermesInternal: null | {}};
-
-const App = () => {
+export default function App(){
   return (
-    <>
-        <Text>Hello World!</Text> 
-    </>
+    <NativeRouter>
+      <Route exact path="/" component={Login} />
+  </NativeRouter>
   );
-};
+}
 
-
-export default App;
+AppRegistry.registerComponent("App", () => App);
