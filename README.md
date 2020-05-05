@@ -12,7 +12,10 @@ One code to learn them all.
 * Android Studio 3.6.3
 * Run over Samsung Galaxy S9
 
+Some good reference for setting up the environment: <https://reactnative.dev/docs/environment-setup>
+
 ## Steps to run and debug
+
 Once in /elessar/ folder, open a terminal and run:
 
 ```console
