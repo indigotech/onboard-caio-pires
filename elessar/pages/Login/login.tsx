@@ -41,6 +41,7 @@ export default class Login extends Component<Props,LoginState>{
 
         if(validate_pwd(this.state.password) && validate_email(this.state.email)){
             this.setState({ status: true })
+            this.setState({ message: '' })
             return;
         };
 
