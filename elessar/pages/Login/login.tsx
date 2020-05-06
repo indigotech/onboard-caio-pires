@@ -71,11 +71,11 @@ export default class Login extends Component<Props,LoginState>{
     render(){
         return(
             
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
-                <View>
-                    
+            <View style={{ flex: 1, justifyContent: 'center',  backgroundColor: 'black'}}>
+                <View style={{borderBottomWidth: 30, justifyContent: 'space-between'}} >
                     <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
-                </View>
+                </View >
+                <View style={{borderBottomWidth: 10, justifyContent: 'space-between'}}>
                 <TextInput
                     onChangeText={(email) => this.setState({ email: email })} 
                     style={styles.textInput}
@@ -84,6 +84,8 @@ export default class Login extends Component<Props,LoginState>{
                     maxLength={200}
                     onBlur={Keyboard.dismiss}
                 />
+                </View >
+                <View style={{borderBottomWidth: 10, justifyContent: 'space-between'}}>
                 <TextInput
                     onChangeText={(password) => this.setState({ password: password })}
                     secureTextEntry={true}
@@ -93,6 +95,7 @@ export default class Login extends Component<Props,LoginState>{
                     maxLength={200}
                     onBlur={Keyboard.dismiss}
                 />
+                </View >
                 <TouchableOpacity
                     onPress={this.validate_fields}
                     style={styles.Button}>
