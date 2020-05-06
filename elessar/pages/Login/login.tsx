@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, createRef } from 'react';
 import { View, Keyboard, StyleSheet, TouchableOpacity, Button, Text, TextInput} from 'react-native';
 
 
@@ -42,9 +42,8 @@ const styles = StyleSheet.create({
     }
 });
 
-export default function Login(){
-    const [email, onChangeEmail] = React.useState('');
-    const [password, onChangeePassword] = React.useState('');
+export default class Login extends Component{
+   render(){
     return(
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
             <View>
@@ -77,5 +76,6 @@ export default function Login(){
             </View>
       </View>
     );
+    }
 }
 
