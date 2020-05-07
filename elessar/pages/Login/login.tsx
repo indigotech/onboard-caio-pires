@@ -51,7 +51,7 @@ export default class Login extends Component<{},LoginState>{
         return(
             
             <View style={styles.OuterView}>
-                <View style={{borderBottomWidth: 30, justifyContent: 'space-between'}} >
+                <View style={styles.HeaderView} >
                     <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
                 </View >
                 <View style={styles.field}>
@@ -95,6 +95,10 @@ const styles = StyleSheet.create({
         flex: 1, 
         justifyContent: 'center',  
         backgroundColor: 'black'
+    },
+    HeaderView: {
+        borderBottomWidth: 30, 
+        justifyContent: 'space-between'
     },
     container: {
       flex: 1,
