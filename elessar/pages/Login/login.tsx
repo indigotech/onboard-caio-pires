@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect, Props }  from 'react';
-import { View, Keyboard, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
-
-
+import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
+import './validation.tsx'
+import { validate_email, validate_pwd } from './validation';
 
 interface LoginState {
     email: string,
@@ -17,65 +17,45 @@ export default class Login extends Component<Props,LoginState>{
             email: '',
             message: '',
             password: '',
-            status: false,
         }
-        this.validate_fields = this.validate_fields.bind(this)
     }
-    
 
+    validate_fields = () => {
+        const isPwdValid = validate_pwd(this.state.password)
+        const isEmailValid = validate_email(this.state.email)
 
-    validate_fields(){
-
-        const validate_email = (email: string) => {
-            const expression = /(?!.*\.{2})^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([\t]*\r\n)?[\t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([\t]*\r\n)?[\t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
-        
-            return expression.test(String(email).toLowerCase())
-        }
-
-        const validate_pwd = (pwd: string) => {
-            const expression = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
-            
-            return expression.test(String(pwd))
-        }
-
-
-        if(validate_pwd(this.state.password) && validate_email(this.state.email)){
-            this.setState({ status: true })
+        if(isPwdValid && isEmailValid ){
             this.setState({ message: '' })
             return;
         };
 
 
-        if((!validate_email(this.state.email)) && (!validate_pwd(this.state.password))){
+        if((!isEmailValid) && (!isPwdValid)){
             this.setState({ message: 'E-mail inválido\nSenha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.' })
-            this.setState({ status: false })
             return;
         };
 
-        if(!validate_email(this.state.email)){
+        if(!isEmailValid){
             this.setState({ message: 'E-mail inválido' })
-            this.setState({ status: false })
             return;
         };
 
-        if(!validate_pwd(this.state.password)){
+        if(!isPwdValid){
             this.setState({ message: 'Senha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.'})
-            this.setState({ status: false })
             return;
         };
 
     }
 
 
-
     render(){
         return(
             
-            <View style={{ flex: 1, justifyContent: 'center',  backgroundColor: 'black'}}>
+            <View style={styles.OuterView}>
                 <View style={{borderBottomWidth: 30, justifyContent: 'space-between'}} >
                     <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
                 </View >
-                <View style={{borderBottomWidth: 10, justifyContent: 'space-between'}}>
+                <View style={styles.field}>
                 <TextInput
                     onChangeText={(email) => this.setState({ email: email })} 
                     style={styles.textInput}
@@ -85,7 +65,7 @@ export default class Login extends Component<Props,LoginState>{
                     onBlur={Keyboard.dismiss}
                 />
                 </View >
-                <View style={{borderBottomWidth: 10, justifyContent: 'space-between'}}>
+                <View style={styles.field}>
                 <TextInput
                     onChangeText={(password) => this.setState({ password: password })}
                     secureTextEntry={true}
@@ -96,9 +76,9 @@ export default class Login extends Component<Props,LoginState>{
                     onBlur={Keyboard.dismiss}
                 />
                 </View >
-                <TouchableOpacity
-                    onPress={this.validate_fields}
-                    style={styles.Button}>
+                <TouchableOpacity 
+                    style={styles.Button} 
+                    onPress={this.validate_fields}>                    
                     <Text style={styles.ButtonText}>Submeter</Text>
                 </TouchableOpacity>
 
@@ -112,6 +92,11 @@ export default class Login extends Component<Props,LoginState>{
 }
 
 const styles = StyleSheet.create({
+    OuterView: { 
+        flex: 1, 
+        justifyContent: 'center',  
+        backgroundColor: 'black'
+    },
     container: {
       flex: 1,
       paddingTop: 45,
@@ -153,6 +138,9 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         color:'white',
-    }
+    },
+    field: {
+        borderBottomWidth: 10, 
+        justifyContent: 'space-between'}
 });
 
