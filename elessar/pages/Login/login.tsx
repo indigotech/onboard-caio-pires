@@ -1,8 +1,90 @@
-import React, { Component, createRef } from 'react';
-import { View, Keyboard, StyleSheet, TouchableOpacity, Button, Text, TextInput} from 'react-native';
+import React, { Component, useState, useEffect, Props }  from 'react';
+import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
+import './validation.tsx'
+import { validateEmail, validatePassword } from './validation';
 
+interface LoginState {
+    email: string,
+    message: string,
+    password:string,
+  }
+
+export default class Login extends Component<{},LoginState>{
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '',
+            message: '',
+            password: '',
+        }
+    }
+
+    validateFields = () => {
+        const isEmailValid = validateEmail(this.state.email);
+        const isPasswordValid = validatePassword(this.state.password);
+        
+        const emailMessage = isEmailValid ? '' : 'E-mail inválido';
+        let passwordMessage = isPasswordValid ? '' : 'Senha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.';
+        passwordMessage = !isEmailValid && !isPasswordValid ? '\n' + passwordMessage;
+        
+        this.setState({ message: emailMessage + passwordMessage });
+
+    }
+
+
+    render(){
+        return(
+            
+            <View style={styles.OuterView}>
+                <View style={styles.HeaderView} >
+                    <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
+                </View >
+                <View style={styles.field}>
+                <TextInput
+                    onChangeText={(email) => this.setState({ email: email })} 
+                    style={styles.textInput}
+                    placeholder="E-mail"
+                    placeholderTextColor = "grey"
+                    maxLength={200}
+                    onBlur={Keyboard.dismiss}
+                />
+                </View >
+                <View style={styles.field}>
+                <TextInput
+                    onChangeText={(password) => this.setState({ password: password })}
+                    secureTextEntry={true}
+                    style={styles.textInput}
+                    placeholder="Senha"
+                    placeholderTextColor = "grey"
+                    maxLength={200}
+                    onBlur={Keyboard.dismiss}
+                />
+                </View >
+                <TouchableOpacity 
+                    style={styles.Button} 
+                    onPress={this.validateFields}>                    
+                    <Text style={styles.ButtonText}>Submeter</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.msgText}>
+                    {this.state.message}
+                </Text>
+            </View>
+        );
+    }
+
+}
 
 const styles = StyleSheet.create({
+    OuterView: { 
+        flex: 1, 
+        justifyContent: 'center',  
+        backgroundColor: 'black'
+    },
+    HeaderView: {
+        borderBottomWidth: 30, 
+        justifyContent: 'space-between'
+    },
     container: {
       flex: 1,
       paddingTop: 45,
@@ -27,6 +109,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center'
     },
+    msgText: {
+        color: '#c22d2d',
+        fontSize: 20,
+        textAlign: 'center'
+    },
     inputContainer: {
         paddingTop: 15
     },
@@ -39,43 +126,9 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         color:'white',
-    }
+    },
+    field: {
+        borderBottomWidth: 10, 
+        justifyContent: 'space-between'}
 });
-
-export default class Login extends Component{
-   render(){
-    return(
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
-            <View>
-                <Text style={styles.header}>Bem vindo à Taqtile!</Text>
-            </View>
-            <View>
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Email"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
-            </View>
-            <View>
-                <TextInput
-                    secureTextEntry={true}
-                    style={styles.textInput}
-                    placeholder="Senha"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
-            </View>
-            <View>
-                <TouchableOpacity
-                    style={styles.Button}>
-                    <Text style={styles.ButtonText}>Submeter</Text>
-                </TouchableOpacity>
-            </View>
-      </View>
-    );
-    }
-}
 
