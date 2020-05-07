@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect, Props }  from 'react';
 import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
 import './validation.tsx'
-import { validateEmail, validatePwd } from './validation';
+import { validateEmail, validatePassword } from './validation';
 
 interface LoginState {
     email: string,
@@ -20,29 +20,14 @@ export default class Login extends Component<{},LoginState>{
     }
 
     validateFields = () => {
-        const isPwdValid = validatePwd(this.state.password)
-        const isEmailValid = validateEmail(this.state.email)
-
-        if(isPwdValid && isEmailValid ){
-            this.setState({ message: '' })
-            return;
-        };
-
-
-        if((!isEmailValid) && (!isPwdValid)){
-            this.setState({ message: 'E-mail inválido\nSenha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.' })
-            return;
-        };
-
-        if(!isEmailValid){
-            this.setState({ message: 'E-mail inválido' })
-            return;
-        };
-
-        if(!isPwdValid){
-            this.setState({ message: 'Senha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.'})
-            return;
-        };
+        const isEmailValid = validateEmail(this.state.email);
+        const isPasswordValid = validatePassword(this.state.password);
+        
+        const emailMessage = isEmailValid ? '' : 'E-mail inválido';
+        let passwordMessage = isPasswordValid ? '' : 'Senha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.';
+        passwordMessage = !isEmailValid && !isPasswordValid ? '\n' + passwordMessage;
+        
+        this.setState({ message: emailMessage + passwordMessage });
 
     }
 

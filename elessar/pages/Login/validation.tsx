@@ -3,7 +3,7 @@ export const validateEmail = (email: string) => {
     return expression.test(String(email).toLowerCase())
 }
 
-export const validatePwd = (pwd: string) => {
+export const validatePassword = (password: string) => {
     const expression = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
-    return expression.test(String(pwd))
+    return expression.test(String(password))
 }
