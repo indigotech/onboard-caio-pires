@@ -1,16 +1,15 @@
 import React, { Component, useState, useEffect, Props }  from 'react';
 import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
 import './validation.tsx'
-import { validate_email, validate_pwd } from './validation';
+import { validateEmail, validatePwd } from './validation';
 
 interface LoginState {
     email: string,
     message: string,
     password:string,
-    status: boolean,
   }
 
-export default class Login extends Component<Props,LoginState>{
+export default class Login extends Component<{},LoginState>{
     constructor(props) {
         super(props);
         this.state = {
@@ -20,9 +19,9 @@ export default class Login extends Component<Props,LoginState>{
         }
     }
 
-    validate_fields = () => {
-        const isPwdValid = validate_pwd(this.state.password)
-        const isEmailValid = validate_email(this.state.email)
+    validateFields = () => {
+        const isPwdValid = validatePwd(this.state.password)
+        const isEmailValid = validateEmail(this.state.email)
 
         if(isPwdValid && isEmailValid ){
             this.setState({ message: '' })
@@ -78,7 +77,7 @@ export default class Login extends Component<Props,LoginState>{
                 </View >
                 <TouchableOpacity 
                     style={styles.Button} 
-                    onPress={this.validate_fields}>                    
+                    onPress={this.validateFields}>                    
                     <Text style={styles.ButtonText}>Submeter</Text>
                 </TouchableOpacity>
 
