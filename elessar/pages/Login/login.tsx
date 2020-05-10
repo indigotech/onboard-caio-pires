@@ -2,6 +2,14 @@ import React, { Component, useState, useEffect, Props }  from 'react';
 import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
 import './validation.tsx'
 import { validateEmail, validatePassword } from './validation';
+import { storeData, retrieveData } from './store';
+
+import { AsyncStorage } from 'react-native';
+import gql from 'graphql-tag';
+import { client } from '../../App';
+
+
+
 
 interface LoginState {
     email: string,
@@ -20,6 +28,7 @@ export default class Login extends Component<{},LoginState>{
     }
 
     validateFields = () => {
+        console.log(async() => await retrieveData('result'))
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
@@ -29,48 +38,68 @@ export default class Login extends Component<{},LoginState>{
         
         this.setState({ message: emailMessage + passwordMessage });
 
+        if(isEmailValid && isPasswordValid){
+            client.mutate({
+                variables: {data: {email: this.state.email, password: this.state.password }},
+                mutation: gql`
+                mutation Login($data: LoginInputType!) {
+                    login(data: $data) {
+                    user {
+                        id
+                    } 
+                    token
+                    }
+                }
+                `            
+            })
+            .then(result => {storeData('result', result)})
+            .catch((e) => this.setState({ message: e.graphQLErrors[0].message}))
+
+            
+        }
+
+        console.log('depois do login: '+retrieveData)
+            
     }
 
 
-    render(){
-        return(
-            
+    render() {
+        return (
             <View style={styles.OuterView}>
                 <View style={styles.HeaderView} >
                     <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
                 </View >
                 <View style={styles.field}>
-                <TextInput
-                    onChangeText={(email) => this.setState({ email: email })} 
-                    style={styles.textInput}
-                    placeholder="E-mail"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
+                    <TextInput
+                        onChangeText={(email) => this.setState({ email: email.trim() })}
+                        style={styles.textInput}
+                        placeholder="E-mail"
+                        placeholderTextColor="grey"
+                        maxLength={200}
+                        onBlur={Keyboard.dismiss}
+                    />
                 </View >
                 <View style={styles.field}>
-                <TextInput
-                    onChangeText={(password) => this.setState({ password: password })}
-                    secureTextEntry={true}
-                    style={styles.textInput}
-                    placeholder="Senha"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
+                    <TextInput
+                        onChangeText={(password) => this.setState({ password: password })}
+                        secureTextEntry={true}
+                        style={styles.textInput}
+                        placeholder="Senha"
+                        placeholderTextColor="grey"
+                        maxLength={200}
+                        onBlur={Keyboard.dismiss}
+                    />
                 </View >
-                <TouchableOpacity 
-                    style={styles.Button} 
-                    onPress={this.validateFields}>                    
+                <TouchableOpacity
+                    style={styles.Button}
+                    onPress={this.validateFields}>
                     <Text style={styles.ButtonText}>Submeter</Text>
                 </TouchableOpacity>
-
                 <Text style={styles.msgText}>
                     {this.state.message}
                 </Text>
             </View>
-        );
+    );
     }
 
 }
