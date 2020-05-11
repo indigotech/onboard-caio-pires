@@ -7,6 +7,7 @@ import { storeData, retrieveData } from './store';
 import { AsyncStorage } from 'react-native';
 import gql from 'graphql-tag';
 import { client } from '../../App';
+import { getToken } from './requests';
 
 
 
@@ -27,8 +28,11 @@ export default class Login extends Component<{},LoginState>{
         }
     }
 
-    validateFields = () => {
-        console.log(async() => await retrieveData('result'))
+    handleButton = async () => {
+        console.log('Antes do login')
+        console.log(await retrieveData('token'))
+
+
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
@@ -39,26 +43,14 @@ export default class Login extends Component<{},LoginState>{
         this.setState({ message: emailMessage + passwordMessage });
 
         if(isEmailValid && isPasswordValid){
-            client.mutate({
-                variables: {data: {email: this.state.email, password: this.state.password }},
-                mutation: gql`
-                mutation Login($data: LoginInputType!) {
-                    login(data: $data) {
-                    user {
-                        id
-                    } 
-                    token
-                    }
-                }
-                `            
-            })
-            .then(result => {storeData('result', result)})
-            .catch((e) => this.setState({ message: e.graphQLErrors[0].message}))
-
-            
+            const requestResult = await getToken(this.state.email, this.state.password);
+            await storeData('token', requestResult.data?.login?.token)
+            if(!requestResult.data?.login?.token){
+                this.setState({ message: requestResult.graphQLError?.[0]?.message || 'Erro na rede. Verique a conexão'})           
+            }
         }
-
-        console.log('depois do login: '+retrieveData)
+        console.log('Depois do login')
+        console.log(await retrieveData('token'))
             
     }
 
@@ -67,7 +59,7 @@ export default class Login extends Component<{},LoginState>{
         return (
             <View style={styles.OuterView}>
                 <View style={styles.HeaderView} >
-                    <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
+                    <Text style={styles.header}>Bem-vindo(a) à Taqtile!</Text>
                 </View >
                 <View style={styles.field}>
                     <TextInput
@@ -92,8 +84,8 @@ export default class Login extends Component<{},LoginState>{
                 </View >
                 <TouchableOpacity
                     style={styles.Button}
-                    onPress={this.validateFields}>
-                    <Text style={styles.ButtonText}>Submeter</Text>
+                    onPress={this.handleButton}>
+                    <Text style={styles.ButtonText}>Entrar</Text>
                 </TouchableOpacity>
                 <Text style={styles.msgText}>
                     {this.state.message}
