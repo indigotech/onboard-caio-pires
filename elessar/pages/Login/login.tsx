@@ -1,34 +1,35 @@
-import React, { Component, useState, useEffect, Props }  from 'react';
-import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
-import './validation.tsx'
+import React, { Component} from 'react';
+import { View, Keyboard, Image, ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { validateEmail, validatePassword } from './validation';
 import { storeData, retrieveData } from './store';
-
-import { AsyncStorage } from 'react-native';
-import gql from 'graphql-tag';
-import { client } from '../../App';
-import { getToken } from './requests';
-
-
-
+import { getToken } from './requests'
 
 interface LoginState {
     email: string,
     message: string,
-    password:string,
+    password: string,
+    loading: boolean,
+}
+
+interface Props {
+    navigation: any
   }
 
-export default class Login extends Component<{},LoginState>{
+export default class Login extends Component<Props, LoginState>{
     constructor(props) {
         super(props);
         this.state = {
             email: '',
             message: '',
             password: '',
+            loading: false
         }
     }
 
     handleButton = async () => {
+
+        this.setState({ loading: true })
+
 
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
@@ -45,7 +46,12 @@ export default class Login extends Component<{},LoginState>{
                 await storeData('token', requestResult.data?.login?.token);
                 this.setState({ message: requestResult.graphQLError?.[0]?.message || 'Erro na rede. Verique a conexão'})           
             }
+            else{
+                this.props.navigation.navigate("Home")
+            }
         }
+        this.setState({ loading: false })
+        
             
     }
 
@@ -80,7 +86,10 @@ export default class Login extends Component<{},LoginState>{
                 <TouchableOpacity
                     style={styles.Button}
                     onPress={this.handleButton}>
-                    <Text style={styles.ButtonText}>Entrar</Text>
+                    {this.state.loading? <ActivityIndicator size='large'>    
+                        </ActivityIndicator> : 
+                        <Text style={styles.ButtonText}>Entrar</Text>
+                    }
                 </TouchableOpacity>
                 <Text style={styles.msgText}>
                     {this.state.message}
