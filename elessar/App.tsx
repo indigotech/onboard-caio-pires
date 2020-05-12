@@ -6,13 +6,6 @@ import ApolloClient, {InMemoryCache} from 'apollo-boost';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-const cache = new InMemoryCache();
-
-
-export const client = new ApolloClient({
-  uri: 'https://tq-template-server-sample.herokuapp.com/graphql',
-  cache: cache,
-});
 
 const Stack = createStackNavigator();
 

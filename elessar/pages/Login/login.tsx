@@ -36,17 +36,18 @@ export default class Login extends Component<Props, LoginState>{
         
         const emailMessage = isEmailValid ? '' : 'E-mail inválido';
         let passwordMessage = isPasswordValid ? '' : 'Senha inválida, deve conter pelo menos 7 caracteres e conter 1 letra e 1 número.';
-        passwordMessage = !isEmailValid && !isPasswordValid ? '\n' + passwordMessage;
+        passwordMessage = !isEmailValid && !isPasswordValid ? '\n' + passwordMessage: passwordMessage;
         
         this.setState({ message: emailMessage + passwordMessage });
 
         if(isEmailValid && isPasswordValid){
             const requestResult = await getToken(this.state.email, this.state.password);
-            if(!requestResult.data?.login?.token){
-                await storeData('token', requestResult.data?.login?.token);
-                this.setState({ message: requestResult.graphQLError?.[0]?.message || 'Erro na rede. Verique a conexão'})           
+            if(typeof requestResult.data?.login?.token == 'undefined'){
+                
+                this.setState({ message: requestResult.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})           
             }
             else{
+                await storeData('token', requestResult.data?.login?.token);
                 this.props.navigation.navigate("Home")
             }
         }

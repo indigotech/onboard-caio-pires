@@ -1,41 +1,43 @@
 import React, { Component, useState, useEffect, Props } from 'react';
-import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
+import { View, ScrollView, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { getToken,  getUsers} from '../Login/requests'
-import { retrieveData } from 'pages/Login/store';
+import  userCard  from '../components/userCard';
+
 
 
 interface HomeState {
-    email: string,
-    message: string,
-    password: string,
+    users: any,
 }
 export default class Home extends Component<{}, HomeState>{
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            message: '',
-            password: '',
+            users: [],
         }
     }
 
-        
-    private showUsers = async () => {
-        const token = await retrieveData('token');
-        if(token){
-            const result = await getUsers(token);
-            console.log(result);
-        }
-        
-            
+    componentWillMount = async () =>{
+        this.setState({users : (await getUsers()).data?.users?.nodes});
+        console.log(this.state.users);
     }
 
     render() {
         return (
             <View style={styles.OuterView}>
-                <View style={styles.HeaderView} >
-                    <Text style={styles.header}>Bem-vindo(a) à Home!</Text>
-                </View >
+                    <Text style={styles.header}>Usuários:</Text>
+                <ScrollView>
+                    {this.state.users.map((user) => {
+                        return (
+                            <ScrollView style={styles.inputContainer} key={user.id}>
+                                <Text style={styles.userCard}  >
+                                    Name: {user.name}{"\n"}          
+                                    E-mail: {user.email}              
+                                </Text>
+                            </ScrollView>
+                        );
+                    })}
+                </ScrollView>
+
             </View>
     );
     }
@@ -98,5 +100,13 @@ const styles = StyleSheet.create({
     field: {
         borderBottomWidth: 10,
         justifyContent: 'space-between'
+    },
+    userCard: {
+        borderBottomWidth: 10,
+        justifyContent: 'space-between',
+        fontSize: 18,
+        textAlign: 'left',
+        margin: 10,
+        color: 'grey',
     }
 });
