@@ -7,7 +7,8 @@ export async function storeData(key: string, data: any) {
         key,
         data
       );
-    } catch (error) {
+    }
+    catch (error) {
       console.log('Store Item problem')
       console.log(error)
     }

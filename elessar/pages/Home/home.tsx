@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect, Props } from 'react';
 import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
-
+import { getToken,  getUsers} from '../Login/requests'
+import { retrieveData } from 'pages/Login/store';
 
 
 interface HomeState {
@@ -18,6 +19,16 @@ export default class Home extends Component<{}, HomeState>{
         }
     }
 
+        
+    private showUsers = async () => {
+        const token = await retrieveData('token');
+        if(token){
+            const result = await getUsers(token);
+            console.log(result);
+        }
+        
+            
+    }
 
     render() {
         return (

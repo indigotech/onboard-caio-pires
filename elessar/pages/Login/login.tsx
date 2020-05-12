@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
-import { View, Keyboard, Image, ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
+import { View, Keyboard, ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { validateEmail, validatePassword } from './validation';
-import { storeData, retrieveData } from './store';
+import { storeData } from './store';
 import { getToken } from './requests'
 
 interface LoginState {
@@ -26,7 +26,7 @@ export default class Login extends Component<Props, LoginState>{
         }
     }
 
-    handleButton = async () => {
+    private handleButton = async () => {
 
         this.setState({ loading: true })
 
