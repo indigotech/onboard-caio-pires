@@ -1,43 +1,85 @@
-import React, { Component, useState, useEffect, Props } from 'react';
-import { View, ScrollView, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
-import { getToken,  getUsers} from '../Login/requests'
-import  userCard  from '../components/userCard';
-
+import React, { Component} from 'react';
+import { View, FlatList, ActivityIndicator, ScrollView, StyleSheet, Text} from 'react-native';
+import { getUsers} from '../Login/requests'
 
 
 interface HomeState {
     users: any,
+    loading: boolean,
+    limit: number,
+    page: number,
 }
 export default class Home extends Component<{}, HomeState>{
     constructor(props) {
         super(props);
         this.state = {
             users: [],
+            loading: false,
+            limit: 20,
+            page: 1,
         }
     }
 
     componentWillMount = async () =>{
-        this.setState({users : (await getUsers()).data?.users?.nodes});
-        console.log(this.state.users);
+        const results = (await getUsers())
+        this.setState({users : results.data?.users?.nodes});
+        console.log(results);
     }
+
+    loadRepositories = async () => {
+        if (this.state.loading) return;
+    
+        const { page } = this.state;
+    
+        this.setState({ loading: true });
+    
+        const response = (await getUsers())
+        const usersToConcat = response.data?.users?.nodes;
+    
+        this.setState({
+          users: [ ...this.state.users, ...usersToConcat ],
+          page: page + 1,
+          loading: false,
+        });
+      }
+
+    componentDidMount() {
+        this.loadRepositories();
+    }
+
+    renderFooter = () => {
+        if (!this.state.loading) return null;
+        return (
+          <View >
+            <ActivityIndicator size='large' />
+          </View>
+        );
+      };
+    
+
+    renderItem = ({ item }) => (
+        <View style={styles.listItem}>
+            <Text style={styles.userCard}  >
+                Name: {item.name}{"\n"}          
+                E-mail: {item.email}              
+            </Text>
+        </View>
+      );
 
     render() {
         return (
             <View style={styles.OuterView}>
-                    <Text style={styles.header}>Usuários:</Text>
-                <ScrollView>
-                    {this.state.users.map((user) => {
-                        return (
-                            <ScrollView style={styles.inputContainer} key={user.id}>
-                                <Text style={styles.userCard}  >
-                                    Name: {user.name}{"\n"}          
-                                    E-mail: {user.email}              
-                                </Text>
-                            </ScrollView>
-                        );
-                    })}
-                </ScrollView>
-
+                <Text style={styles.header}>Usuários:</Text>
+                <FlatList
+                style={{ marginTop: 30 }}
+                contentContainerStyle={styles.list}
+                data={this.state.users}
+                renderItem={this.renderItem}
+                keyExtractor={item => item.id}
+                onEndReached={this.loadRepositories}
+                onEndReachedThreshold={0.1}
+                ListFooterComponent={this.renderFooter}
+                />
             </View>
     );
     }
@@ -46,19 +88,18 @@ export default class Home extends Component<{}, HomeState>{
 
 
 const styles = StyleSheet.create({
+    list: {
+        paddingHorizontal: 20,
+    },
+    listItem: {
+    marginTop: 20,
+    padding: 30,
+    backgroundColor: '#525252',
+    },
     OuterView: {
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'black'
-    },
-    HeaderView: {
-        borderBottomWidth: 30,
-        justifyContent: 'space-between'
-    },
-    container: {
-        flex: 1,
-        paddingTop: 45,
-        backgroundColor: '#F5FCFF',
     },
     header: {
         fontSize: 25,
@@ -67,46 +108,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white'
     },
-    Button: {
-        borderWidth: 1,
-        borderColor: '#3968b3',
-        backgroundColor: '#144ca6',
-        padding: 15,
-        margin: 5
-    },
-    ButtonText: {
-        color: '#FFFFFF',
-        fontSize: 20,
-        textAlign: 'center'
-    },
-    msgText: {
-        color: '#c22d2d',
-        fontSize: 20,
-        textAlign: 'center'
-    },
-    inputContainer: {
-        paddingTop: 15
-    },
-    textInput: {
-        borderColor: '#CCCCCC',
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        height: 50,
-        fontSize: 25,
-        paddingLeft: 20,
-        paddingRight: 20,
-        color: 'white',
-    },
-    field: {
-        borderBottomWidth: 10,
-        justifyContent: 'space-between'
-    },
     userCard: {
-        borderBottomWidth: 10,
         justifyContent: 'space-between',
-        fontSize: 18,
+        fontSize: 20,
         textAlign: 'left',
         margin: 10,
-        color: 'grey',
+        color: 'white',
     }
 });
