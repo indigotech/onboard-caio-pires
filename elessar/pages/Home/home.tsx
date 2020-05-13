@@ -8,6 +8,8 @@ interface HomeState {
     loading: boolean,
     limit: number,
     page: number,
+    offset: number,
+    finished: boolean,
 }
 export default class Home extends Component<{}, HomeState>{
     constructor(props) {
@@ -17,34 +19,41 @@ export default class Home extends Component<{}, HomeState>{
             loading: false,
             limit: 20,
             page: 1,
+            offset: 0,
+            finished: false,
         }
     }
 
     componentWillMount = async () =>{
-        const results = (await getUsers())
+        const results = (await getUsers(this.state.limit*(this.state.page-1), this.state.limit))
         this.setState({users : results.data?.users?.nodes});
         console.log(results);
     }
 
-    loadRepositories = async () => {
+    loadUsers = async () => {
         if (this.state.loading) return;
     
         const { page } = this.state;
     
         this.setState({ loading: true });
     
-        const response = (await getUsers())
+        const response = (await getUsers(this.state.limit*(this.state.page-1), this.state.limit*(this.state.page)))
         const usersToConcat = response.data?.users?.nodes;
+        this.setState({finished: !response.data?.users?.pageInfo?.hasNextPage})
+        if(!this.state.finished){
+            this.setState({
+                users: [ ...this.state.users, ...usersToConcat ],
+                page: page + 1,
+            });   
+        }
+        this.setState({ loading: false });
+
     
-        this.setState({
-          users: [ ...this.state.users, ...usersToConcat ],
-          page: page + 1,
-          loading: false,
-        });
+        
       }
 
     componentDidMount() {
-        this.loadRepositories();
+        this.loadUsers();        
     }
 
     renderFooter = () => {
@@ -76,7 +85,7 @@ export default class Home extends Component<{}, HomeState>{
                 data={this.state.users}
                 renderItem={this.renderItem}
                 keyExtractor={item => item.id}
-                onEndReached={this.loadRepositories}
+                onEndReached={this.loadUsers}
                 onEndReachedThreshold={0.1}
                 ListFooterComponent={this.renderFooter}
                 />

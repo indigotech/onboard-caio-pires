@@ -28,9 +28,6 @@ export default class Login extends Component<Props, LoginState>{
 
     private handleButton = async () => {
 
-        this.setState({ loading: true })
-
-
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
