@@ -29,9 +29,6 @@ export default class Login extends Component<{},LoginState>{
     }
 
     handleButton = async () => {
-        console.log('Antes do login')
-        console.log(await retrieveData('token'))
-
 
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
@@ -44,13 +41,11 @@ export default class Login extends Component<{},LoginState>{
 
         if(isEmailValid && isPasswordValid){
             const requestResult = await getToken(this.state.email, this.state.password);
-            await storeData('token', requestResult.data?.login?.token)
             if(!requestResult.data?.login?.token){
+                await storeData('token', requestResult.data?.login?.token);
                 this.setState({ message: requestResult.graphQLError?.[0]?.message || 'Erro na rede. Verique a conexão'})           
             }
         }
-        console.log('Depois do login')
-        console.log(await retrieveData('token'))
             
     }
 

@@ -16,10 +16,7 @@ export async function storeData(key: string, data: any) {
 export async function retrieveData (key: string){
     try {
       const value = await AsyncStorage.getItem(key);
-      if (value !== null) {
-        // We have data!!
-        return value;
-      }
+      return value;
     } catch (error) {
       console.log('Retrieve Item problem')
         console.log('Error retrieving token.')
