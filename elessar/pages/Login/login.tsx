@@ -2,6 +2,15 @@ import React, { Component, useState, useEffect, Props }  from 'react';
 import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
 import './validation.tsx'
 import { validateEmail, validatePassword } from './validation';
+import { storeData, retrieveData } from './store';
+
+import { AsyncStorage } from 'react-native';
+import gql from 'graphql-tag';
+import { client } from '../../App';
+import { getToken } from './requests';
+
+
+
 
 interface LoginState {
     email: string,
@@ -19,7 +28,8 @@ export default class Login extends Component<{},LoginState>{
         }
     }
 
-    validateFields = () => {
+    handleButton = async () => {
+
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
@@ -29,48 +39,54 @@ export default class Login extends Component<{},LoginState>{
         
         this.setState({ message: emailMessage + passwordMessage });
 
+        if(isEmailValid && isPasswordValid){
+            const requestResult = await getToken(this.state.email, this.state.password);
+            if(!requestResult.data?.login?.token){
+                await storeData('token', requestResult.data?.login?.token);
+                this.setState({ message: requestResult.graphQLError?.[0]?.message || 'Erro na rede. Verique a conexão'})           
+            }
+        }
+            
     }
 
 
-    render(){
-        return(
-            
+    render() {
+        return (
             <View style={styles.OuterView}>
                 <View style={styles.HeaderView} >
-                    <Text style={styles.header}>Bem-vindo à Taqtile!</Text>
+                    <Text style={styles.header}>Bem-vindo(a) à Taqtile!</Text>
                 </View >
                 <View style={styles.field}>
-                <TextInput
-                    onChangeText={(email) => this.setState({ email: email })} 
-                    style={styles.textInput}
-                    placeholder="E-mail"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
+                    <TextInput
+                        onChangeText={(email) => this.setState({ email: email.trim() })}
+                        style={styles.textInput}
+                        placeholder="E-mail"
+                        placeholderTextColor="grey"
+                        maxLength={200}
+                        onBlur={Keyboard.dismiss}
+                    />
                 </View >
                 <View style={styles.field}>
-                <TextInput
-                    onChangeText={(password) => this.setState({ password: password })}
-                    secureTextEntry={true}
-                    style={styles.textInput}
-                    placeholder="Senha"
-                    placeholderTextColor = "grey"
-                    maxLength={200}
-                    onBlur={Keyboard.dismiss}
-                />
+                    <TextInput
+                        onChangeText={(password) => this.setState({ password: password })}
+                        secureTextEntry={true}
+                        style={styles.textInput}
+                        placeholder="Senha"
+                        placeholderTextColor="grey"
+                        maxLength={200}
+                        onBlur={Keyboard.dismiss}
+                    />
                 </View >
-                <TouchableOpacity 
-                    style={styles.Button} 
-                    onPress={this.validateFields}>                    
-                    <Text style={styles.ButtonText}>Submeter</Text>
+                <TouchableOpacity
+                    style={styles.Button}
+                    onPress={this.handleButton}>
+                    <Text style={styles.ButtonText}>Entrar</Text>
                 </TouchableOpacity>
-
                 <Text style={styles.msgText}>
                     {this.state.message}
                 </Text>
             </View>
-        );
+    );
     }
 
 }
