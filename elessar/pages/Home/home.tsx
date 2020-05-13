@@ -24,23 +24,16 @@ export default class Home extends Component<{}, HomeState>{
         }
     }
 
-    componentWillMount = async () =>{
-        const results = (await getUsers(this.state.limit*(this.state.page-1), this.state.limit))
-        this.setState({users : results.data?.users?.nodes});
-        console.log(results);
-    }
 
     loadUsers = async () => {
         if (this.state.loading) return;
-    
-        const { page } = this.state;
-    
-        this.setState({ loading: true });
-    
-        const response = (await getUsers(this.state.limit*(this.state.page-1), this.state.limit*(this.state.page)))
-        const usersToConcat = response.data?.users?.nodes;
-        this.setState({finished: !response.data?.users?.pageInfo?.hasNextPage})
+
         if(!this.state.finished){
+            const { page } = this.state;
+            this.setState({ loading: true });
+            const response = (await getUsers(this.state.limit*(this.state.page-1), this.state.limit))
+            const usersToConcat = response.data?.users?.nodes;
+            this.setState({finished: !response.data?.users?.pageInfo?.hasNextPage})
             this.setState({
                 users: [ ...this.state.users, ...usersToConcat ],
                 page: page + 1,
@@ -52,7 +45,7 @@ export default class Home extends Component<{}, HomeState>{
         
       }
 
-    componentDidMount() {
+    componentDidMount = async () =>{
         this.loadUsers();        
     }
 
