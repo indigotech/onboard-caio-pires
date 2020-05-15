@@ -20,6 +20,6 @@ export async function retrieveData (key: string){
       return value;
     } catch (error) {
       console.log('Retrieve Item problem')
-        console.log('Error retrieving token.')
+      console.log('Error retrieving token.')
     }
   };

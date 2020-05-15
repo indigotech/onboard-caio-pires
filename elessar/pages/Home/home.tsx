@@ -1,7 +1,6 @@
 import React, { Component} from 'react';
 import { View, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Text} from 'react-native';
-import { getUsers} from '../Login/requests'
-
+import { getUsers} from '../../requests/requests'
 
 interface HomeState {
     users: any,
@@ -10,6 +9,7 @@ interface HomeState {
     page: number,
     offset: number,
     finished: boolean,
+    modalVisible: boolean,
 }
 
 interface Props {
@@ -26,6 +26,7 @@ export default class Home extends Component<Props, HomeState>{
             page: 1,
             offset: 0,
             finished: false,
+            modalVisible: false,
         }
     }
 
@@ -53,22 +54,32 @@ export default class Home extends Component<Props, HomeState>{
     }
 
     renderFooter = () => {
-        return this.state.loading && (
-            <View >
-              <ActivityIndicator size='large' />
-            </View>
-          );
+        if (!this.state.loading) return null;
+        return (
+          <View >
+            <ActivityIndicator size='large' />
+          </View>
+        );
     };
 
+    goToDetails = (id) => {
+        this.props.navigation.navigate('User Details', { id: id })
+    }
 
-    renderItem = ({ item }) => (
-        <View style={styles.listItem}>
+    renderItem = ({ item }) => {
+        return (
+            <TouchableOpacity onPress={() => {this.goToDetails(item.id)}}>
+            <View style={styles.listItem}>
             <Text style={styles.userCard}  >
                 Name: {item.name}{"\n"}
                 E-mail: {item.email}
             </Text>
-        </View>
-    );
+            </View>
+            </TouchableOpacity>
+        );
+    }      
+         
+        
 
     private handleButton = async () => {
         this.props.navigation.navigate("Add User");            
@@ -143,4 +154,40 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center'
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
+      },
+      openButton: {
+        backgroundColor: "#F194FF",
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+      },
+      textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+      }
 });

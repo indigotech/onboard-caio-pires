@@ -3,7 +3,7 @@ import { AsyncStorage } from 'react-native';
 import gql from 'graphql-tag';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink, concat } from 'apollo-link';
-import { retrieveData } from './store';
+import { retrieveData } from '../pages/Login/store';
 import { ApolloClient, InMemoryCache} from 'apollo-boost';
 
 
@@ -114,11 +114,37 @@ export async function getUsers(offset: number, limit: number){
             }
             `          
         })
-        console.log(result)
     }
     catch(e){
         console.log(e)
         result = e
     }
     return result;
+}
+
+
+export async function getUser(id: number){
+  let result
+  const client = updateApolloContext();
+  try{
+      result = (await client).query({
+        variables: {id: id},
+          query: gql`
+            query User($id: ID!){
+              user(id:$id){
+                name
+                email
+                role
+                birthDate
+                phone
+              }
+            }
+          `          
+      })
+  }
+  catch(e){
+      console.log(e)
+      result = e
+  }
+  return result;
 }

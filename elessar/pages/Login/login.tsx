@@ -2,8 +2,7 @@ import React, { Component} from 'react';
 import { View, Keyboard, ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { validateEmail, validatePassword } from './validation';
 import { storeData } from './store';
-import { getToken } from './requests'
-import { Input } from 'react-native-elements';
+import { getToken } from '../../requests/requests'
 
 interface LoginState {
     email: string,
@@ -28,6 +27,7 @@ export default class Login extends Component<LoginProps, LoginState>{
     }
 
     private handleButton = async () => {
+
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
