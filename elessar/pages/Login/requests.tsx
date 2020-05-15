@@ -114,6 +114,7 @@ export async function getUsers(offset: number, limit: number){
             }
             `          
         })
+        console.log(result)
     }
     catch(e){
         console.log(e)

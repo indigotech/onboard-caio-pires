@@ -47,9 +47,6 @@ export default class Home extends Component<Props, HomeState>{
         this.setState({ loading: false });
     }
 
-    
-        
-    }
 
     componentDidMount(){
         this.loadUsers();        

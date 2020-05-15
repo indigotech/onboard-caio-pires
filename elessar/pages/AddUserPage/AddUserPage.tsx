@@ -16,14 +16,10 @@ import {
   validateName,
   validateRole,
 } from '../Login/validation';
-import {storeData} from '../Login/store';
-import {getToken, addUser} from '../Login/requests';
-import * as yup from 'yup';
-import {Formik} from 'formik';
-import moment from 'moment';
+import { addUser} from '../Login/requests';
+
 import DatePicker from '@react-native-community/datetimepicker';
-import {Picker} from '@react-native-community/picker';
-import {Input} from 'react-native-elements';
+
 
 interface AddUserPageState {
   name: string;
