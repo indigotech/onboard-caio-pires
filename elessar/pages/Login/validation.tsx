@@ -7,3 +7,23 @@ export const validatePassword = (password: string) => {
     const expression = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
     return expression.test(String(password))
 }
+
+export const validateName = (name: string) => {
+    const expression = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g;
+    return expression.test(String(name))
+}
+
+export const validatePhone = (phone: string) => {
+    const expression = /^\d{8,}/;
+    return expression.test(String(phone))
+}
+
+export const validateRole = (name: string) => {
+    if(name == 'admin' || name == 'user'){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+

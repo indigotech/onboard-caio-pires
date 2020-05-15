@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator, ScrollView, StyleSheet, Text } from 'react-native';
-import { getUsers } from '../Login/requests'
+import React, { Component} from 'react';
+import { View, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Text} from 'react-native';
+import { getUsers} from '../Login/requests'
 
 
 interface HomeState {
@@ -11,7 +11,12 @@ interface HomeState {
     offset: number,
     finished: boolean,
 }
-export default class Home extends Component<{}, HomeState>{
+
+interface Props {
+    navigation: any
+  }
+
+export default class Home extends Component<Props, HomeState>{
     constructor(props) {
         super(props);
         this.state = {
@@ -42,8 +47,12 @@ export default class Home extends Component<{}, HomeState>{
         this.setState({ loading: false });
     }
 
-    componentDidMount() {
-        this.loadUsers();
+    
+        
+    }
+
+    componentDidMount = async () =>{
+        this.loadUsers();        
     }
 
     renderFooter = () => {
@@ -64,9 +73,21 @@ export default class Home extends Component<{}, HomeState>{
         </View>
     );
 
+    private handleButton = async () => {
+        this.props.navigation.navigate("Add User");            
+    }
+
     render() {
         return (
             <View style={styles.OuterView}>
+                <TouchableOpacity
+                    style={styles.Button}
+                    onPress={this.handleButton}>
+                    {this.state.loading? <ActivityIndicator size='large'>    
+                        </ActivityIndicator> : 
+                        <Text style={styles.ButtonText}>Adicionar Usuário</Text>
+                    }
+                </TouchableOpacity>
                 <Text style={styles.header}>Usuários:</Text>
                 <FlatList
                     style={{ marginTop: 30 }}
@@ -112,5 +133,17 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         margin: 10,
         color: 'white',
-    }
+    },
+    Button: {
+        borderWidth: 1,
+        borderColor: '#3968b3',
+        backgroundColor: '#144ca6',
+        padding: 15,
+        margin: 5
+      },
+    ButtonText: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center'
+    },
 });

@@ -58,6 +58,29 @@ export async function getToken(email: string, password: string){
     return result;
 }
 
+export async function addUser(userInfo: any){
+  let result
+  const client = await updateApolloContext();
+  try{
+      result = await client.mutate({
+          variables: {data: {name: userInfo.name, phone: userInfo.phone, role: userInfo.role, email: userInfo.email, birthDate: userInfo.date, password: userInfo.password }},
+          mutation: gql`
+          mutation createUser($data: UserInputType!) {
+            createUser(data: $data) {
+              name
+            } 
+          }
+          
+          `            
+      })
+  }
+  catch(e){
+      console.log(e)
+      result = e
+  }
+  return result;
+}
+
 
 export async function getUsers(offset: number, limit: number){
     let result
@@ -83,6 +106,7 @@ export async function getUsers(offset: number, limit: number){
             }
             `          
         })
+        console.log(result)
     }
     catch(e){
         console.log(e)
