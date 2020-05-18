@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, AppRegistry } from "react-native";
-import { NativeRouter, Route, Link } from "react-router-native";
 import Login from './pages/Login/login'
+import Home from './pages/Home/home'
 import ApolloClient, {InMemoryCache} from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const cache = new InMemoryCache();
 
@@ -13,13 +14,16 @@ export const client = new ApolloClient({
   cache: cache,
 });
 
+const Stack = createStackNavigator();
+
 export default function App(){
   return (
-    <NativeRouter>
-      <Route exact path="/" component={Login} />
-    </NativeRouter>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={Login}/>
+        <Stack.Screen name="Home" component={Home}/>
+      </Stack.Navigator>    
+    </NavigationContainer>
   );
 }
-
-// module.exports = client;
 AppRegistry.registerComponent("App", () => App);
