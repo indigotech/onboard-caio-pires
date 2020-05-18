@@ -36,6 +36,7 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^4.3.9",
     "react-router-native": "^5.1.2",
+    "styled-components": "^5.1.0",
     "subscriptions-transport-ws": "^0.9.16",
     "yup": "^0.28.5"
   },
