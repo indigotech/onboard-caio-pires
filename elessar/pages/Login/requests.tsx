@@ -58,7 +58,15 @@ export async function getToken(email: string, password: string){
     return result;
 }
 
-export async function addUser(userInfo: any){
+interface addUserProps{
+  name: string,
+  phone: string,
+  email: string,
+  role: string,
+  password: string,
+  date: string,
+}
+export async function addUser(userInfo: addUserProps): Promise<any>{
   let result
   const client = await updateApolloContext();
   try{
@@ -106,7 +114,6 @@ export async function getUsers(offset: number, limit: number){
             }
             `          
         })
-        console.log(result)
     }
     catch(e){
         console.log(e)

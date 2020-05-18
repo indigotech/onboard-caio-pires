@@ -40,7 +40,6 @@ export default class Login extends Component<LoginProps, LoginState>{
         if(isEmailValid && isPasswordValid){
             const requestResult = await getToken(this.state.email, this.state.password);
             if(typeof requestResult.data?.login?.token == 'undefined'){
-                
                 this.setState({ message: requestResult.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})           
             }
             else{

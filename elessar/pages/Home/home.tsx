@@ -51,7 +51,7 @@ export default class Home extends Component<Props, HomeState>{
         
     }
 
-    componentDidMount = async () =>{
+    componentDidMount(){
         this.loadUsers();        
     }
 
