@@ -1,51 +1,103 @@
-import React, { Component, useState, useEffect, Props } from 'react';
-import { View, Keyboard, Image, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
-
+import React, { Component } from 'react';
+import { View, FlatList, ActivityIndicator, ScrollView, StyleSheet, Text } from 'react-native';
+import { getUsers } from '../Login/requests'
 
 
 interface HomeState {
-    email: string,
-    message: string,
-    password: string,
+    users: any,
+    loading: boolean,
+    limit: number,
+    page: number,
+    offset: number,
+    finished: boolean,
 }
 export default class Home extends Component<{}, HomeState>{
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            message: '',
-            password: '',
+            users: [],
+            loading: false,
+            limit: 20,
+            page: 1,
+            offset: 0,
+            finished: false,
         }
     }
 
 
+    loadUsers = async () => {
+        if (this.state.loading) return;
+
+        if (!this.state.finished) {
+            const { page } = this.state;
+            this.setState({ loading: true });
+            const response = (await getUsers(this.state.limit * (this.state.page - 1), this.state.limit))
+            const usersToConcat = response.data?.users?.nodes;
+            this.setState({ finished: response.data?.users?.pageInfo?.hasNextPage === false })
+            this.setState({
+                users: [...this.state.users, ...usersToConcat],
+                page: page + 1,
+            });
+        }
+        this.setState({ loading: false });
+    }
+
+    componentDidMount() {
+        this.loadUsers();
+    }
+
+    renderFooter = () => {
+        return this.state.loading && (
+            <View >
+              <ActivityIndicator size='large' />
+            </View>
+          );
+    };
+
+
+    renderItem = ({ item }) => (
+        <View style={styles.listItem}>
+            <Text style={styles.userCard}  >
+                Name: {item.name}{"\n"}
+                E-mail: {item.email}
+            </Text>
+        </View>
+    );
+
     render() {
         return (
             <View style={styles.OuterView}>
-                <View style={styles.HeaderView} >
-                    <Text style={styles.header}>Bem-vindo(a) à Home!</Text>
-                </View >
+                <Text style={styles.header}>Usuários:</Text>
+                <FlatList
+                    style={{ marginTop: 30 }}
+                    contentContainerStyle={styles.list}
+                    data={this.state.users}
+                    renderItem={this.renderItem}
+                    keyExtractor={item => item.id}
+                    onEndReached={this.loadUsers}
+                    onEndReachedThreshold={0.1}
+                    ListFooterComponent={this.renderFooter}
+                />
             </View>
-    );
+        );
     }
 
 }
 
 
 const styles = StyleSheet.create({
+    list: {
+        paddingHorizontal: 20,
+    },
+    listItem: {
+        marginTop: 20,
+        padding: 30,
+        backgroundColor: '#525252',
+    },
     OuterView: {
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'black'
-    },
-    HeaderView: {
-        borderBottomWidth: 30,
-        justifyContent: 'space-between'
-    },
-    container: {
-        flex: 1,
-        paddingTop: 45,
-        backgroundColor: '#F5FCFF',
     },
     header: {
         fontSize: 25,
@@ -54,38 +106,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white'
     },
-    Button: {
-        borderWidth: 1,
-        borderColor: '#3968b3',
-        backgroundColor: '#144ca6',
-        padding: 15,
-        margin: 5
-    },
-    ButtonText: {
-        color: '#FFFFFF',
+    userCard: {
+        justifyContent: 'space-between',
         fontSize: 20,
-        textAlign: 'center'
-    },
-    msgText: {
-        color: '#c22d2d',
-        fontSize: 20,
-        textAlign: 'center'
-    },
-    inputContainer: {
-        paddingTop: 15
-    },
-    textInput: {
-        borderColor: '#CCCCCC',
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        height: 50,
-        fontSize: 25,
-        paddingLeft: 20,
-        paddingRight: 20,
+        textAlign: 'left',
+        margin: 10,
         color: 'white',
-    },
-    field: {
-        borderBottomWidth: 10,
-        justifyContent: 'space-between'
     }
 });
