@@ -11,11 +11,11 @@ interface LoginState {
     loading: boolean,
 }
 
-interface Props {
+interface LoginProps {
     navigation: any
   }
 
-export default class Login extends Component<Props, LoginState>{
+export default class Login extends Component<LoginProps, LoginState>{
     constructor(props) {
         super(props);
         this.state = {
