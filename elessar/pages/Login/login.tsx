@@ -38,13 +38,13 @@ export default class Login extends Component<LoginProps, LoginState>{
         this.setState({ message: emailMessage + passwordMessage });
 
         if(isEmailValid && isPasswordValid){
-            const requestResult = await getToken(this.state.email, this.state.password);
-            if(typeof requestResult.data?.login?.token == 'undefined'){
-                this.setState({ message: requestResult.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})           
-            }
-            else{
+            try{
+                const requestResult = await getToken(this.state.email, this.state.password);
                 await storeData('token', requestResult.data?.login?.token);
                 this.props.navigation.navigate("Home")
+            }
+            catch(e){
+                this.setState({ message: e.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})  
             }
         }
         this.setState({ loading: false })

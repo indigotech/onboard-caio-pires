@@ -16,10 +16,8 @@ import {
   validateName,
   validateRole,
 } from '../Login/validation';
-import { addUser} from '../Login/requests';
-
+import {addUser} from '../../requests/requests';
 import DatePicker from '@react-native-community/datetimepicker';
-
 
 interface AddUserPageState {
   name: string;
@@ -92,8 +90,7 @@ export default class AddUserPage extends Component<Props, AddUserPageState> {
       isNameValid &&
       isPhoneValid &&
       isRoleValid;
-    console.log(allValid);
-
+  
     if (allValid) {
       const userInfo = {
         name: this.state.name,
@@ -103,16 +100,14 @@ export default class AddUserPage extends Component<Props, AddUserPageState> {
         date: this.state.birth.toISOString().split('T')[0],
         phone: this.state.phone,
       };
-      this.setState({loading: true});
-      const requestResult = await addUser(userInfo);
-      if (typeof requestResult.data == 'undefined') {
+      try {
+        await addUser(userInfo);
+        this.props.navigation.navigate('Home');
+      } catch (e) {
         this.setState({
           message:
-            requestResult.graphQLErrors?.[0]?.message ||
-            'Erro na rede. Verique a conexão',
+            e.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão',
         });
-      } else {
-        this.props.navigation.navigate('Home');
       }
     }
     this.setState({loading: false});
