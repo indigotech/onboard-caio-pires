@@ -2,7 +2,7 @@ import React, { Component} from 'react';
 import { View, Keyboard, ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { validateEmail, validatePassword } from './validation';
 import { storeData } from './store';
-import { getToken } from './requests'
+import { getToken } from '../../requests/requests'
 
 interface LoginState {
     email: string,
@@ -28,7 +28,6 @@ export default class Login extends Component<LoginProps, LoginState>{
 
     private handleButton = async () => {
 
-
         const isEmailValid = validateEmail(this.state.email);
         const isPasswordValid = validatePassword(this.state.password);
         
@@ -39,14 +38,13 @@ export default class Login extends Component<LoginProps, LoginState>{
         this.setState({ message: emailMessage + passwordMessage });
 
         if(isEmailValid && isPasswordValid){
-            const requestResult = await getToken(this.state.email, this.state.password);
-            if(typeof requestResult.data?.login?.token == 'undefined'){
-                
-                this.setState({ message: requestResult.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})           
-            }
-            else{
+            try{
+                const requestResult = await getToken(this.state.email, this.state.password);
                 await storeData('token', requestResult.data?.login?.token);
                 this.props.navigation.navigate("Home")
+            }
+            catch(e){
+                this.setState({ message: e.graphQLErrors?.[0]?.message || 'Erro na rede. Verique a conexão'})  
             }
         }
         this.setState({ loading: false })
@@ -62,6 +60,9 @@ export default class Login extends Component<LoginProps, LoginState>{
                     <Text style={styles.header}>Bem-vindo(a) à Taqtile!</Text>
                 </View >
                 <View style={styles.field}>
+                    <Text style={styles.labelText}>
+                        E-mail
+                    </Text>
                     <TextInput
                         onChangeText={(email) => this.setState({ email: email.trim() })}
                         style={styles.textInput}
@@ -72,6 +73,9 @@ export default class Login extends Component<LoginProps, LoginState>{
                     />
                 </View >
                 <View style={styles.field}>
+                    <Text style={styles.labelText}>
+                        Senha
+                    </Text>
                     <TextInput
                         onChangeText={(password) => this.setState({ password: password })}
                         secureTextEntry={true}
@@ -137,6 +141,11 @@ const styles = StyleSheet.create({
         color: '#c22d2d',
         fontSize: 20,
         textAlign: 'center'
+    },
+    labelText: {
+        color: 'grey',
+        fontSize: 20,
+        textAlign: 'left'
     },
     inputContainer: {
         paddingTop: 15
