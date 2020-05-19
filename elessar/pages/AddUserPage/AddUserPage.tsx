@@ -1,9 +1,7 @@
-import React, {Fragment, Component} from 'react';
+import React, {Component} from 'react';
 import {
   View,
-  Keyboard,
   ScrollView,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -16,8 +14,11 @@ import {
   validateName,
   validateRole,
 } from '../Login/validation';
-import {addUser} from '../../requests/requests';
 import DatePicker from '@react-native-community/datetimepicker';
+import {addUser} from '../../requests/requests';
+import Header from '../../components/h1.component';
+import Button from '../../components/button.component';
+import Form from '../../components/form.component';
 
 interface AddUserPageState {
   name: string;
@@ -116,21 +117,14 @@ export default class AddUserPage extends Component<Props, AddUserPageState> {
   render() {
     return (
       <ScrollView style={styles.OuterView}>
-        <View style={styles.HeaderView}>
-          <Text style={styles.header}>Crie um novo usuário:</Text>
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.labelText}>Nome</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(name) => this.setState({name: name.trim()})}
-            placeholder="Nome"
-            placeholderTextColor="grey"
-            maxLength={200}
-            onBlur={Keyboard.dismiss}
-          />
-          <Text style={styles.msgText}>{this.state.nameMessage}</Text>
-        </View>
+        <Header>Adicione um usuário:</Header>
+        <Form
+          label="Nome"
+          placeholder="Nome Completo"
+          onChangeText={(name) => this.setState({name: name.trim()})}
+          secureTextEntry={false}
+          message={this.state.nameMessage}
+        />
         <View style={styles.field}>
           <Text style={styles.labelText}>Data de Nascimento</Text>
           <TouchableOpacity
@@ -163,62 +157,40 @@ export default class AddUserPage extends Component<Props, AddUserPageState> {
             />
           )}
         </View>
-        <View style={styles.field}>
-          <Text style={styles.labelText}>E-mail</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(email) => this.setState({email: email.trim()})}
-            placeholder="E-mail"
-            placeholderTextColor="grey"
-            maxLength={200}
-            onBlur={Keyboard.dismiss}
-          />
-          <Text style={styles.msgText}>{this.state.emailMessage}</Text>
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.labelText}>Telefone</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(phone) => this.setState({phone: phone.trim()})}
-            placeholder="Telefone"
-            keyboardType={'phone-pad'}
-            placeholderTextColor="grey"
-            maxLength={200}
-            onBlur={Keyboard.dismiss}
-          />
-          <Text style={styles.msgText}>{this.state.phoneMessage}</Text>
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.labelText}>Senha</Text>
-          <TextInput
-            onChangeText={(password) => this.setState({password: password})}
-            secureTextEntry={true}
-            style={styles.textInput}
-            placeholder="Senha"
-            placeholderTextColor="grey"
-            maxLength={200}
-            onBlur={Keyboard.dismiss}
-          />
-          <Text style={styles.msgText}>{this.state.passwordMessage}</Text>
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.labelText}>Função</Text>
-          <TextInput
-            onChangeText={(role) => this.setState({role: role.trim()})}
-            style={styles.textInput}
-            placeholder="admin ou user"
-            placeholderTextColor="grey"
-          />
-          <Text style={styles.msgText}>{this.state.roleMessage}</Text>
-        </View>
-        <TouchableOpacity style={styles.Button} onPress={this.handleButton}>
-          {this.state.loading ? (
-            <ActivityIndicator size="large"></ActivityIndicator>
-          ) : (
-            <Text style={styles.ButtonText}>Adicionar Usuário</Text>
-          )}
-        </TouchableOpacity>
+        <Form
+          label="E-mail"
+          placeholder="E-mail"
+          onChangeText={(email) => this.setState({email: email.trim()})}
+          secureTextEntry={false}
+          message={this.state.emailMessage}
+        />
+        <Form
+          label="Senha"
+          placeholder="Senha"
+          onChangeText={(password) => this.setState({password: password})}
+          secureTextEntry={true}
+          message={''}
+        />
+        <Form
+          label="Telefone"
+          placeholder="Telefone"
+          onChangeText={(phone) => this.setState({phone: phone.trim()})}
+          secureTextEntry={false}
+          keyboardType={'phone-pad'}
+          message={this.state.phoneMessage}
+        />
+        <Form
+          label="Função"
+          placeholder="user ou admin"
+          onChangeText={(role) => this.setState({role: role.trim()})}
+          secureTextEntry={false}
+          message={this.state.roleMessage}
+        />
+        <Button
+          loading={this.state.loading}
+          text="Adicionar Usuário"
+          onPress={this.handleButton}
+        />
         <Text style={styles.msgText}>{this.state.message}</Text>
       </ScrollView>
     );

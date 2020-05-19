@@ -19,11 +19,6 @@ export const validatePhone = (phone: string) => {
 }
 
 export const validateRole = (name: string) => {
-    if(name == 'admin' || name == 'user'){
-        return true;
-    }
-    else{
-        return false;
-    }
+    return (name == 'admin' || name == 'user');
 }
 
